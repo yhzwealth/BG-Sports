@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wealth.mapper.UserMapper">
+
+    <select id="getInfo" resultType="com.wealth.entity.User">
+        SELECT * FROM `user` WHERE `username` = (#{username})
+    </select>
+
+    <update id="updateCoins">
+        UPDATE `user` SET `coins` = `coins` + (#{param2}) WHERE `username` = (#{param1})
+    </update>
+
+    <update id="updateLoginCoins">
+        UPDATE `user` SET `coins` = `coins` + 10,`todayViews` = 0
+        WHERE `username` = (#{username})
+        AND `lastLogin` NOT BETWEEN CURDATE() AND DATE_ADD(CURDATE(),INTERVAL 1 DAY)
+    </update>
+
+    <update id="updateLoginTime">
+        UPDATE `user` SET `lastLogin` = now() WHERE `username` = (#{username})
+    </update>
+
+    <update id="updateViews">
+        UPDATE `user` SET todayViews = todayViews + 1 WHERE `username` = #{username}
+    </update>
+
+    <select id="checkUsername" resultType="integer">
+        SELECT count(*)
+        FROM `user` WHERE `username` = #{username}
+    </select>
+
+    <insert id="insertUser" parameterType="com.wealth.entity.User">
+        INSERT INTO `user`(`username`,`password`,`nickname`,`avatar`,`role`)
+        VALUES (#{user.username},#{user.password},#{user.nickname},#{user.avatar},#{user.role})
+    </insert>
+
+    <select id="checkPwd" resultType="integer">
+        SELECT count(*) FROM `user` WHERE `username` = #{param1} AND `password` = #{param2}
+    </select>
+
+    <update id="changePwd">
+        UPDATE `user` SET `password` = #{param2}
+        WHERE `username` = #{param1}
+    </update>
+
+    <update id="changeAvatar">
+        UPDATE `user` SET `avatar` = #{param2}
+        WHERE `username` = #{param1}
+    </update>
+</mapper>

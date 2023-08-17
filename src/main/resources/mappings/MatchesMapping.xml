@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wealth.mapper.MatchesMapper">
+
+    <select id="getUnCompleteMatch" resultType="com.wealth.vo.MatchesVo">
+        SELECT m.`id`,m.`name`,player1,p1.`name` AS player1name,p1.`pic` AS play1pic,`player1Score`,
+        player2,p2.`name` AS player2name,p2.`pic` AS play2pic,`player2Score`,time,type
+        FROM `matches` m
+        JOIN `player` p1 ON m.`player1` = p1.`id`
+        JOIN `player` p2 ON m.`player2` = p2.`id`
+        WHERE `state` = 0
+        <if test="param3 != null">
+            AND `type` = #{param3}
+        </if>
+        ORDER BY `time` ASC
+        LIMIT #{param1},#{param2}
+    </select>
+
+    <select id="getUnCompleteMatchCount" resultType="integer">
+        SELECT count(*) FROM `matches`
+        WHERE `state` = 0
+        <if test="type != null">
+            AND `type` = #{param1}
+        </if>
+    </select>
+
+    <select id="getCompleteMatch" resultType="com.wealth.vo.MatchesVo">
+        SELECT m.`id`,m.`name`,player1,p1.`name` AS player1name,p1.`pic` AS play1pic,`player1Score`,
+        player2,p2.`name` AS player2name,p2.`pic` AS play2pic,`player2Score`,time,type
+        FROM `matches` m
+        JOIN `player` p1 ON m.`player1` = p1.`id`
+        JOIN `player` p2 ON m.`player2` = p2.`id`
+        WHERE `state` = 1
+        <if test="param3 != null">
+            AND `type` = #{param3}
+        </if>
+        ORDER BY `time` DESC
+        LIMIT #{param1},#{param2}
+    </select>
+
+    <select id="getCompleteMatchCount" resultType="integer">
+        SELECT count(*) FROM `matches`
+        WHERE `state` = 1
+        <if test="type != null">
+            AND `type` = #{param1}
+        </if>
+    </select>
+
+    <select id="getWinRate" resultType="com.wealth.vo.MatchRateVo">
+        SELECT `player1`,`player2`,`winRate`
+        FROM `matches`
+        WHERE id = #{id}
+    </select>
+    <select id="getMatch" resultType="com.wealth.vo.MatchesVo">
+        SELECT m.`id`,m.`name`,player1,p1.`name` AS player1name,p1.`pic` AS play1pic,`player1Score`,
+               player2,p2.`name` AS player2name,p2.`pic` AS play2pic,`player2Score`,time,type
+        FROM `matches` m
+                 JOIN `player` p1 ON m.`player1` = p1.`id`
+                 JOIN `player` p2 ON m.`player2` = p2.`id`
+        WHERE m.`id` = #{id}
+    </select>
+
+</mapper>

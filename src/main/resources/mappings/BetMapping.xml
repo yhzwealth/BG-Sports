@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wealth.mapper.BetMapper">
+    <insert id="insertBet">
+        INSERT INTO `bet`(username, coins, rare, matchId, teamId)
+        VALUES (#{po.username},#{po.coins},#{po.rare},#{po.matchId},#{po.teamId})
+    </insert>
+
+    <select id="getBetInfo" resultType="com.wealth.vo.BetVo">
+        SELECT b.`id`,
+               username,
+               coins,
+               rare,
+               m.`type`  AS matchType,
+               m.`name`  AS matchName,
+               p.`name`  AS teamName,
+               createTime,
+               m.`state`,
+               m.`player1Score`,
+               p2.`name` AS `player1name`,
+               m.`player2Score`,
+               p3.`name` AS `player2name`
+        FROM `bet` b
+                 JOIN `matches` m ON b.`matchId` = m.`id`
+                 JOIN `player` p ON b.`teamId` = p.`id`
+                 LEFT JOIN `player` p2 ON p2.`id` = m.`player1`
+                 LEFT JOIN `player` p3 ON p3.`id` = m.`player2`
+        WHERE `username` = #{param1}
+        ORDER BY createTime DESC
+        LIMIT #{param2},#{param3}
+    </select>
+
+    <select id="getBetCount" resultType="integer">
+        SELECT count(*)
+        FROM `bet` b
+        WHERE `username` = #{username}
+    </select>
+
+    <select id="countTodayBet" resultType="integer">
+        SELECT count(*)
+        FROM `bet`
+        WHERE `username` = #{username}
+          AND DATE(`createTime`) = CURRENT_DATE()
+    </select>
+
+    <select id="getTotalCoins" resultType="com.wealth.vo.InVolumeVo">
+        SELECT teamId,SUM(coins) AS `total`
+        FROM bet
+        WHERE matchId = #{id}
+        GROUP BY teamId
+    </select>
+
+</mapper>
